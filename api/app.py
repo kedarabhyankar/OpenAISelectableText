@@ -37,7 +37,7 @@ def post_upload_home():
             # Re-render the home page so the user can attempt to upload a new file again.
             return render_template('home.html')
         # Save the file under the static folder.
-        f.save('static/' + f.filename)
+        f.save('tmp/' + f.filename)
         # Rewind the file pointer to the start - it shouldn't be changed prior to this, but it doesn't hurt.
         f.seek(0)
         # Read the content of the file.
