@@ -6,7 +6,7 @@ from openai import OpenAI
 app = Flask(__name__)
 # A randomly generated UUID for the flash library to use.
 app.secret_key = "c9587cd0-dbc9-4da2-86af-19f1516c08c7"
-
+app.template_folder = "../templates"
 # Define the OpenAI client
 client = OpenAI()
 
