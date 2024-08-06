@@ -1,0 +1,70 @@
+<!-- Author: Kedar Abhyankar -->
+<html lang="en">
+<!-- Define the head elements of the HTML file - in this case, just the title element -->
+<head>
+	<title>Selectable Text Open AI Demo</title>
+</head>
+<body>
+<!-- This is the first page that the user will see when launching this project. It includes an upload button
+    as well as a submit button. -->
+<title>Selectable Text Open AI Demo</title>
+<!-- The form validation, which in this case, is to make sure that the file is only a .txt file, is handled
+    on the backend (Flask) -->
+<p>Upload a text file below.</p>
+<form action="/upload" method="post" enctype="multipart/form-data">
+	<input type="file" name="file"/>
+	<input type="submit" value="Upload">
+</form>
+<p>If you've uploaded a valid file, you'll see the content below. Otherwise, check the error message below.</p>
+<!-- Using Jinja, we are creating some conditional rendering. In this case, this page is revisited with
+    different parameters, so we display different data based on what is rendered. -->
+{% if file_text %}
+	<!-- This is conditionally rendered when the file_text value is filled, which is only when a file is uploaded
+        and verified that it meets the requirements -->
+	<b>
+		<p> You've selected the following text from your file: </p>
+	</b>
+	<!-- This is the element that is modified by JavaScript whenever a new selection is made. -->
+	<p id="selected_text"></p>
+	<!-- Once a selection is made, the below button renders, that lets you send it to GPT-4 for a definition
+        response -->
+	<b>
+		<p>You can click the button below to send this data to GPT-4 and get a definition
+			for your selected text.
+		</p>
+	</b>
+	<!-- On press of the gpt4submit button, the data is sent back to Flask to send to OpenAI to process. It
+        hops between a few pages, so it may take a second! (It will process the data on the /process page and then
+        deliver the result on the /home template once it's done processing.) -->
+	<form action="/process" method="post" enctype="multipart/form-data">
+		<input type="hidden" name="selected_text" id="input_seltext"/>
+		<input name="gpt4submit" id="gpt4submit" type="submit" value="Send to GPT-4"/>
+	</form>
+	<!-- Display the file content -->
+	{% for line in file_text %}
+		<p> {{ line }}</p>
+		<br>
+	{% endfor %}
+{% endif %}
+<!-- Display the OpenAI result if the response is prepared -->
+{% if openai_result %}
+	<p>Your result from OpenAI is:</p>
+	<p> {{ openai_result }}</p>
+	<!-- Clear button to reset the environment and set everything back to normal -->
+	<form action="/">
+		<input name="clear" id="clearbutton" type="submit" value="Clear, and Reset."/>
+	</form>
+{% endif %}
+<!-- If there's an error, we use the flash() library from flask to show the errors here. -->
+{% with messages = get_flashed_messages() %}
+	{% if messages %}
+		{% for message in messages %}
+			<p>{{ message }}</p>
+		{% endfor %}
+	{% endif %}
+{% endwith %}
+<!-- Define the use of the HelperFunctions.js file at the end of the body so that all DOM elements are
+    processed prior to mentioning its use -->
+<script src="static/HelperFunctions.js"></script>
+</body>
+</html>
